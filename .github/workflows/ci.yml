@@ -1,0 +1,59 @@
+name: CI
+
+# Runs automatically whenever changes are pushed to the repository (any
+# branch push, plus pull requests), as required by the project brief.
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-test-and-dockerize:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Set up the Python environment
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      # 3. Install dependencies
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      # Generate the DVC-versioned dataset and train + register the model so
+      # that the prediction-service and API tests (which load the
+      # "production" model from the registry) have something to load.
+      - name: Generate dataset (DVC pipeline stage)
+        run: python src/get_data.py
+
+      - name: Train models and register best model with MLflow
+        run: python src/train.py
+
+      # 4. Run project tests
+      - name: Run tests
+        run: pytest tests/ -v
+
+      # 5. Build the Docker image
+      - name: Build Docker image
+        run: docker build -t breast-cancer-prediction-api:${{ github.sha }} .
+
+      - name: Smoke-test the Docker image
+        run: |
+          docker run -d --name api-smoke-test -p 8000:8000 breast-cancer-prediction-api:${{ github.sha }}
+          for i in $(seq 1 15); do
+            if curl -sf http://localhost:8000/health; then
+              echo "API is healthy"
+              break
+            fi
+            echo "Waiting for API to become healthy... ($i)"
+            sleep 2
+          done
+          curl -sf http://localhost:8000/health
+          docker logs api-smoke-test
+          docker stop api-smoke-test
