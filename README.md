@@ -150,11 +150,4 @@ curl http://localhost:8000/health
 
 
 
-## Submission Checklist
 
-- [ ] GitHub repository link
-- [ ] Screenshot: MLflow experiments (3 runs compared)
-- [ ] Screenshot: registered model (`breast_cancer_classifier`, `production` alias)
-- [ ] Screenshot: `dvc repro` / `dvc status` showing successful tracking
-- [ ] Screenshot: green GitHub Actions workflow run
-- [ ] Screenshot: FastAPI `/predict` request + response
