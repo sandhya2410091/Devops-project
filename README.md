@@ -52,7 +52,7 @@ dvc push           # uploads the tracked data to the remote
 git add dvc.yaml dvc.lock .dvc/config .gitignore
 git commit -m "Track dataset with DVC"
 ```
-📸 **Screenshot to capture:** output of `dvc repro` / `dvc status` showing the pipeline is tracked and up to date.
+
 
 ## 3. ML Pipeline + MLflow Tracking & Registry
 
@@ -76,9 +76,6 @@ mlflow ui --backend-store-uri sqlite:///mlflow.db
 # open http://localhost:5000
 ```
 
-📸 **Screenshots to capture:**
-- MLflow Experiments page showing all 3 runs with their metrics
-- Registered Models page showing `breast_cancer_classifier` with the `production` alias
 
 ## 4. Prediction API (FastAPI)
 
@@ -119,7 +116,8 @@ Response:
 }
 ```
 
-📸 **Screenshot to capture:** the above request/response (curl output or Swagger UI at `http://localhost:8000/docs`).
+
+
 
 ## 5. Tests
 
@@ -139,7 +137,6 @@ docker run -p 8000:8000 breast-cancer-prediction-api
 curl http://localhost:8000/health
 ```
 
-📸 **Screenshot to capture:** `docker build` succeeding, then `curl http://localhost:8000/predict` returning a prediction from the running container.
 
 ## 7. CI/CD — GitHub Actions
 
@@ -151,7 +148,7 @@ curl http://localhost:8000/health
 5. Run `pytest`
 6. Build the Docker image and smoke-test `/health`
 
-📸 **Screenshot to capture:** a green run in the repository's **Actions** tab.
+
 
 ## Submission Checklist
 
